@@ -10,6 +10,7 @@ from alembic import context
 from app.database.base import Base
 from app.core.config import settings
 from app.models.user import User  # noqa
+from app.models.meeting import Meeting  # noqa
 
 # this is the Alembic Config object, which provides
 # access to values within the .ini file in use.
