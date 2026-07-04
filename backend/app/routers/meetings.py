@@ -1,3 +1,4 @@
+from app.services import ai_service
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
 from sqlalchemy.orm import Session
 from app.database.session import get_db
@@ -54,3 +55,12 @@ async def upload_meeting(
 
     meeting_in = MeetingCreate(title=title, raw_transcript=transcript_text)
     return meeting_service.create_meeting(db, meeting_in, current_user.id)
+
+@router.post("/{meeting_id}/summarize", response_model=MeetingResponse)
+def summarize_meeting(
+    meeting_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    meeting = meeting_service.get_meeting(db, meeting_id, current_user.id)  # reuses ownership check
+    return ai_service.generate_executive_summary(db, meeting)
