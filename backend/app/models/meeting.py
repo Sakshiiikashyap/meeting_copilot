@@ -16,7 +16,18 @@ class Meeting(Base):
     # AI-generated fields — all nullable, filled in progressively from Week 3 onward
     executive_summary = Column(Text, nullable=True)
     detailed_summary = Column(Text, nullable=True)
-    action_items = Column(Text, nullable=True)  # stored as JSON string for now
+    action_items = Column(Text, nullable=True)
+    decisions = Column(Text, nullable=True)
+    key_discussion_points = Column(Text, nullable=True)
+    risks = Column(Text, nullable=True)
+    open_questions = Column(Text, nullable=True)
+    follow_up_email = Column(Text, nullable=True)
+    next_meeting_agenda = Column(Text, nullable=True)
+    ai_title = Column(String, nullable=True)
+    tags = Column(Text, nullable=True)
+    category = Column(String, nullable=True)
+    sentiment = Column(String, nullable=True)
+    sentiment_reason = Column(Text, nullable=True)
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
