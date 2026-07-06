@@ -10,3 +10,4 @@ pydantic-settings
 python-multipart
 email-validator
 openai
+slowapi
