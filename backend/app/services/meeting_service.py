@@ -26,3 +26,11 @@ def get_user_meetings(db: Session, user_id: int) -> list[Meeting]:
 def delete_meeting(db: Session, meeting_id: int, user_id: int) -> None:
     meeting = get_meeting(db, meeting_id, user_id)  # reuses ownership check above
     meeting_repository.delete_meeting(db, meeting)
+    
+def search_meetings(db: Session, user_id: int, query: str) -> list[Meeting]:
+    return meeting_repository.search_for_user(db, user_id, query)
+
+def update_meeting(db: Session, meeting_id: int, user_id: int, updates: "MeetingUpdate") -> Meeting:
+    meeting = get_meeting(db, meeting_id, user_id)  # reuses ownership check
+    update_data = updates.model_dump(exclude_unset=True)
+    return meeting_repository.update_meeting(db, meeting, update_data)

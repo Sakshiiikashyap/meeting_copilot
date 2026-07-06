@@ -40,3 +40,8 @@ class MeetingListItem(BaseModel):
 
     class Config:
         from_attributes = True
+
+class MeetingUpdate(BaseModel):
+    title: str | None = None
+    executive_summary: str | None = None
+    detailed_summary: str | None = None

@@ -22,3 +22,19 @@ def get_all_for_user(db: Session, user_id: int) -> list[Meeting]:
 def delete_meeting(db: Session, meeting: Meeting) -> None:
     db.delete(meeting)
     db.commit()
+    
+def search_for_user(db: Session, user_id: int, query: str) -> list[Meeting]:
+    return (
+        db.query(Meeting)
+        .filter(Meeting.user_id == user_id)
+        .filter(Meeting.title.ilike(f"%{query}%"))
+        .order_by(Meeting.created_at.desc())
+        .all()
+    )
+    
+def update_meeting(db: Session, meeting: Meeting, updates: dict) -> Meeting:
+    for field, value in updates.items():
+        setattr(meeting, field, value)
+    db.commit()
+    db.refresh(meeting)
+    return meeting

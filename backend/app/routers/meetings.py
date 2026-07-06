@@ -7,16 +7,23 @@ from app.services import meeting_service
 from app.dependencies.auth import get_current_user
 from app.models.user import User
 from app.middleware.rate_limit import limiter
+from app.utils.file_parser import parse_transcript_file
+from app.schemas.meeting import MeetingUpdate  # add to existing import line
 
 router = APIRouter(prefix="/meetings", tags=["meetings"])
 
 
-@router.post("/", response_model=MeetingResponse)
-def create_meeting(
-    meeting_in: MeetingCreate,
+@router.post("/upload", response_model=MeetingResponse)
+async def upload_meeting(
+    title: str,
+    file: UploadFile = File(...),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    contents = await file.read()
+    transcript_text = parse_transcript_file(file.filename, contents)
+
+    meeting_in = MeetingCreate(title=title, raw_transcript=transcript_text)
     return meeting_service.create_meeting(db, meeting_in, current_user.id)
 
 
@@ -205,3 +212,20 @@ def extract_sentiment(
 ):
     meeting = meeting_service.get_meeting(db, meeting_id, current_user.id)
     return ai_service.generate_sentiment(db, meeting)
+
+@router.get("/search/", response_model=list[MeetingListItem])
+def search_meetings(
+    q: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return meeting_service.search_meetings(db, current_user.id, q)
+
+@router.put("/{meeting_id}", response_model=MeetingResponse)
+def update_meeting(
+    meeting_id: int,
+    updates: MeetingUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return meeting_service.update_meeting(db, meeting_id, current_user.id, updates)

@@ -11,3 +11,5 @@ python-multipart
 email-validator
 openai
 slowapi
+pypdf
+pyhton-docx
