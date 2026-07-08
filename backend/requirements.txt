@@ -12,4 +12,4 @@ email-validator
 openai
 slowapi
 pypdf
-pyhton-docx
+python-docx
