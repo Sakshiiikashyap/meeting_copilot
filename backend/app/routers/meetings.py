@@ -2,28 +2,22 @@ from app.services import ai_service
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, Request
 from sqlalchemy.orm import Session
 from app.database.session import get_db
-from app.schemas.meeting import MeetingCreate, MeetingResponse, MeetingListItem
+from app.schemas.meeting import MeetingCreate, MeetingResponse, MeetingListItem, MeetingUpdate
 from app.services import meeting_service
 from app.dependencies.auth import get_current_user
 from app.models.user import User
 from app.middleware.rate_limit import limiter
 from app.utils.file_parser import parse_transcript_file
-from app.schemas.meeting import MeetingUpdate  # add to existing import line
 
 router = APIRouter(prefix="/meetings", tags=["meetings"])
 
 
-@router.post("/upload", response_model=MeetingResponse)
-async def upload_meeting(
-    title: str,
-    file: UploadFile = File(...),
+@router.post("/", response_model=MeetingResponse)
+def create_meeting(
+    meeting_in: MeetingCreate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    contents = await file.read()
-    transcript_text = parse_transcript_file(file.filename, contents)
-
-    meeting_in = MeetingCreate(title=title, raw_transcript=transcript_text)
     return meeting_service.create_meeting(db, meeting_in, current_user.id)
 
 
@@ -35,6 +29,15 @@ def list_meetings(
     return meeting_service.get_user_meetings(db, current_user.id)
 
 
+@router.get("/search/", response_model=list[MeetingListItem])
+def search_meetings(
+    q: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return meeting_service.search_meetings(db, current_user.id, q)
+
+
 @router.get("/{meeting_id}", response_model=MeetingResponse)
 def get_meeting(
     meeting_id: int,
@@ -42,6 +45,16 @@ def get_meeting(
     current_user: User = Depends(get_current_user),
 ):
     return meeting_service.get_meeting(db, meeting_id, current_user.id)
+
+
+@router.put("/{meeting_id}", response_model=MeetingResponse)
+def update_meeting(
+    meeting_id: int,
+    updates: MeetingUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return meeting_service.update_meeting(db, meeting_id, current_user.id, updates)
 
 
 @router.delete("/{meeting_id}", status_code=204)
@@ -60,11 +73,8 @@ async def upload_meeting(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    if not file.filename.endswith(".txt"):
-        raise HTTPException(status_code=400, detail="Only .txt files are supported right now")
-
     contents = await file.read()
-    transcript_text = contents.decode("utf-8")
+    transcript_text = parse_transcript_file(file.filename, contents)
 
     meeting_in = MeetingCreate(title=title, raw_transcript=transcript_text)
     return meeting_service.create_meeting(db, meeting_in, current_user.id)
@@ -212,20 +222,3 @@ def extract_sentiment(
 ):
     meeting = meeting_service.get_meeting(db, meeting_id, current_user.id)
     return ai_service.generate_sentiment(db, meeting)
-
-@router.get("/search/", response_model=list[MeetingListItem])
-def search_meetings(
-    q: str,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
-):
-    return meeting_service.search_meetings(db, current_user.id, q)
-
-@router.put("/{meeting_id}", response_model=MeetingResponse)
-def update_meeting(
-    meeting_id: int,
-    updates: MeetingUpdate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
-):
-    return meeting_service.update_meeting(db, meeting_id, current_user.id, updates)
