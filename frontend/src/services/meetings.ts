@@ -1,5 +1,5 @@
 import api from "./api";
-import { Meeting, MeetingListItem } from "../types/meeting";
+import type { Meeting, MeetingListItem } from "../types/meeting";
 
 export async function listMeetings(): Promise<MeetingListItem[]> {
   const res = await api.get("/meetings/");
@@ -29,7 +29,6 @@ export async function deleteMeeting(id: number): Promise<void> {
   await api.delete(`/meetings/${id}`);
 }
 
-// AI generation calls — one function per endpoint, all following the same shape
 export async function generateExecutiveSummary(id: number): Promise<Meeting> {
   const res = await api.post(`/meetings/${id}/summarize`);
   return res.data;

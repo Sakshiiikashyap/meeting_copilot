@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import { ThemeProvider } from "./context/ThemeContext";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
@@ -23,6 +24,14 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/meetings/:id"
+        element={
+          <ProtectedRoute>
+            <MeetingDetail />
+          </ProtectedRoute>
+        }
+      />
       <Route path="*" element={<Navigate to="/login" />} />
     </Routes>
   );
@@ -30,19 +39,12 @@ function AppRoutes() {
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <AppRoutes />
-      </AuthProvider>
-    </BrowserRouter>
+    <ThemeProvider>
+      <BrowserRouter>
+        <AuthProvider>
+          <AppRoutes />
+        </AuthProvider>
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
-
-<Route
-  path="/meetings/:id"
-  element={
-    <ProtectedRoute>
-      <MeetingDetail />
-    </ProtectedRoute>
-  }
-/>

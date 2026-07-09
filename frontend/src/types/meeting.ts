@@ -22,15 +22,15 @@ export interface Meeting {
   status: string;
   executive_summary: string | null;
   detailed_summary: string | null;
-  action_items: string | null; // JSON string
-  decisions: string | null; // JSON string
-  key_discussion_points: string | null; // JSON string
-  risks: string | null; // JSON string
-  open_questions: string | null; // JSON string
-  follow_up_email: string | null; // JSON string
-  next_meeting_agenda: string | null; // JSON string
+  action_items: string | null;
+  decisions: string | null;
+  key_discussion_points: string | null;
+  risks: string | null;
+  open_questions: string | null;
+  follow_up_email: string | null;
+  next_meeting_agenda: string | null;
   ai_title: string | null;
-  tags: string | null; // JSON string
+  tags: string | null;
   category: string | null;
   sentiment: string | null;
   sentiment_reason: string | null;

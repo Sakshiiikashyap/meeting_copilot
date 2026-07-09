@@ -1,6 +1,7 @@
 import { useState, FormEvent } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
 
 export default function Register() {
   const [email, setEmail] = useState("");
@@ -8,6 +9,7 @@ export default function Register() {
   const [fullName, setFullName] = useState("");
   const [error, setError] = useState("");
   const { register, loading } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   async function handleSubmit(e: FormEvent) {
@@ -22,46 +24,77 @@ export default function Register() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-950">
-      <form onSubmit={handleSubmit} className="bg-gray-900 p-8 rounded-xl w-full max-w-md space-y-4">
-        <h1 className="text-2xl font-semibold text-white">Create your account</h1>
+    <div className="min-h-screen bg-canvas-light dark:bg-canvas-dark text-ink-light dark:text-ink-dark transition-colors flex items-center justify-center px-6">
+      <button
+        onClick={toggleTheme}
+        className="fixed top-6 right-6 text-sm border border-ink-light/15 dark:border-ink-dark/15 rounded-full px-3 py-1.5 hover:border-ink-light/40 dark:hover:border-ink-dark/40 transition-colors"
+      >
+        {theme === "light" ? "Dark" : "Light"}
+      </button>
 
-        {error && <div className="bg-red-500/10 text-red-400 text-sm p-3 rounded-lg">{error}</div>}
+      <form onSubmit={handleSubmit} className="w-full max-w-sm">
+        <h1 className="font-serif text-3xl mb-1">Create your account</h1>
+        <p className="text-sm text-ink-light/50 dark:text-ink-dark/50 mb-8">
+          Get started with your meeting copilot
+        </p>
 
-        <input
-          type="text"
-          placeholder="Full name"
-          value={fullName}
-          onChange={(e) => setFullName(e.target.value)}
-          className="w-full bg-gray-800 text-white rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          className="w-full bg-gray-800 text-white rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          className="w-full bg-gray-800 text-white rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500"
-        />
+        {error && (
+          <div className="text-sm text-accent border border-accent/20 rounded-md px-3 py-2 mb-5">
+            {error}
+          </div>
+        )}
+
+        <div className="space-y-4 mb-6">
+          <div>
+            <label className="block text-xs uppercase tracking-wider text-ink-light/40 dark:text-ink-dark/40 mb-1.5">
+              Full name
+            </label>
+            <input
+              type="text"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              className="w-full bg-transparent border-b border-ink-light/15 dark:border-ink-dark/15 pb-2 outline-none focus:border-accent transition-colors"
+            />
+          </div>
+          <div>
+            <label className="block text-xs uppercase tracking-wider text-ink-light/40 dark:text-ink-dark/40 mb-1.5">
+              Email
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full bg-transparent border-b border-ink-light/15 dark:border-ink-dark/15 pb-2 outline-none focus:border-accent transition-colors"
+            />
+          </div>
+          <div>
+            <label className="block text-xs uppercase tracking-wider text-ink-light/40 dark:text-ink-dark/40 mb-1.5">
+              Password
+            </label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full bg-transparent border-b border-ink-light/15 dark:border-ink-dark/15 pb-2 outline-none focus:border-accent transition-colors"
+            />
+          </div>
+        </div>
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-lg py-2 font-medium transition"
+          className="w-full bg-accent hover:bg-accent-light disabled:opacity-40 text-white text-sm font-medium py-2.5 rounded-md transition-colors"
         >
-          {loading ? "Creating account..." : "Register"}
+          {loading ? "Creating account…" : "Register"}
         </button>
 
-        <p className="text-gray-400 text-sm text-center">
-          Already have an account? <Link to="/login" className="text-blue-400 hover:underline">Log in</Link>
+        <p className="text-sm text-ink-light/50 dark:text-ink-dark/50 text-center mt-6">
+          Already have an account?{" "}
+          <Link to="/login" className="text-accent hover:text-accent-light transition-colors">
+            Log in
+          </Link>
         </p>
       </form>
     </div>
