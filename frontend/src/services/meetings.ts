@@ -88,3 +88,8 @@ export async function generateSentiment(id: number): Promise<Meeting> {
   const res = await api.post(`/meetings/${id}/sentiment`);
   return res.data;
 }
+
+export async function searchMeetings(query: string): Promise<MeetingListItem[]> {
+  const res = await api.get(`/meetings/search/?q=${encodeURIComponent(query)}`);
+  return res.data;
+}

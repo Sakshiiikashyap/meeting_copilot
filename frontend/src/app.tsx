@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import MeetingDetail from "./pages/MeetingDetail";
+import { Toaster } from "react-hot-toast";
 
 function ProtectedRoute({ children }: { children: JSX.Element }) {
   const { token } = useAuth();
@@ -40,6 +41,17 @@ function AppRoutes() {
 export default function App() {
   return (
     <ThemeProvider>
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          style: {
+            background: "var(--tw-canvas, #faf8f4)",
+            color: "#1f1c1a",
+            fontSize: "14px",
+            border: "1px solid rgba(0,0,0,0.08)",
+          },
+        }}
+      />
       <BrowserRouter>
         <AuthProvider>
           <AppRoutes />
