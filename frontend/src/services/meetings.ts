@@ -1,6 +1,7 @@
 import api from "./api";
 import type { Meeting, MeetingListItem } from "../types/meeting";
 
+
 export async function listMeetings(): Promise<MeetingListItem[]> {
   const res = await api.get("/meetings/");
   return res.data;
@@ -91,5 +92,10 @@ export async function generateSentiment(id: number): Promise<Meeting> {
 
 export async function searchMeetings(query: string): Promise<MeetingListItem[]> {
   const res = await api.get(`/meetings/search/?q=${encodeURIComponent(query)}`);
+  return res.data;
+}
+
+export async function updateMeeting(id: number, updates: Partial<Meeting>): Promise<Meeting> {
+  const res = await api.put(`/meetings/${id}`, updates);
   return res.data;
 }

@@ -34,6 +34,8 @@ import toast from "react-hot-toast";
 import CopyButton from "../components/CopyButton";
 import { downloadMarkdown, downloadPDF } from "../utils/export";
 import { Download } from "lucide-react";
+import EditableText from "../components/EditableText";
+import { updateMeeting } from "../services/meetings";
 
 export default function MeetingDetail() {
   const { id } = useParams<{ id: string }>();
@@ -71,6 +73,12 @@ export default function MeetingDetail() {
     } finally {
       setGenerating(null);
     }
+  }
+  async function handleFieldSave(field: keyof Meeting, newValue: string) {
+    if (!meeting) return;
+    const updated = await updateMeeting(meeting.id, { [field]: newValue });
+    setMeeting(updated);
+    toast.success("Saved");
   }
 
   if (loading || !meeting) {
@@ -190,24 +198,22 @@ export default function MeetingDetail() {
             icon={<ListChecks size={14} />}
             label="Executive summary"
             action={
-              <div className="flex items-center gap-3">
-                {meeting.executive_summary && (
-                  <CopyButton text={meeting.executive_summary} />
-                )}
-                <GenerateButton
-                  active={generating === "summary"}
-                  exists={!!meeting.executive_summary}
-                  onClick={() =>
-                    runGeneration("summary", generateExecutiveSummary)
-                  }
-                />
-              </div>
+              <GenerateButton
+                active={generating === "summary"}
+                exists={!!meeting.executive_summary}
+                onClick={() =>
+                  runGeneration("summary", generateExecutiveSummary)
+                }
+              />
             }
           >
             {meeting.executive_summary ? (
-              <p className="leading-relaxed text-[15px]">
-                {meeting.executive_summary}
-              </p>
+              <EditableText
+                value={meeting.executive_summary}
+                onSave={(newValue) =>
+                  handleFieldSave("executive_summary", newValue)
+                }
+              />
             ) : (
               <Empty text="Generate a concise summary of this meeting." />
             )}
@@ -228,9 +234,12 @@ export default function MeetingDetail() {
             }
           >
             {meeting.detailed_summary ? (
-              <p className="leading-relaxed text-[15px] whitespace-pre-wrap">
-                {meeting.detailed_summary}
-              </p>
+              <EditableText
+                value={meeting.detailed_summary}
+                onSave={(newValue) =>
+                  handleFieldSave("detailed_summary", newValue)
+                }
+              />
             ) : (
               <Empty text="Generate a thorough, multi-paragraph summary." />
             )}
@@ -290,7 +299,6 @@ export default function MeetingDetail() {
                       fill="currentColor"
                     />
                     <span>
-                      {item.task}
                       {item.owner && (
                         <span className="text-ink-light/50 dark:text-ink-dark/50">
                           {" "}

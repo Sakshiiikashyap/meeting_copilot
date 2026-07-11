@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
-import { listMeetings, createMeeting } from "../services/meetings";
+import { listMeetings, createMeeting, searchMeetings } from "../services/meetings";
 import type { MeetingListItem } from "../types/meeting";
 import {
   Moon,
@@ -17,7 +17,6 @@ import { uploadMeeting } from "../services/meetings";
 import toast from "react-hot-toast";
 import { deleteMeeting } from "../services/meetings";
 import { Trash2 } from "lucide-react";
-import { searchMeetings } from "../services/meetings"; // you'll add this function
 
 export default function Dashboard() {
   const { user, logout } = useAuth();

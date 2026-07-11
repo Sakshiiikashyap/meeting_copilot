@@ -4,9 +4,35 @@ import jsPDF from "jspdf";
 export function downloadPDF(meeting: Meeting) {
   const md = meetingToMarkdown(meeting);
   const doc = new jsPDF();
-  const lines = doc.splitTextToSize(md.replace(/[#*\-\[\]]/g, ""), 180);
+
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const marginLeft = 15;
+  const marginTop = 15;
+  const marginBottom = 15;
+  const lineHeight = 6;
+  const usableWidth = pageWidth - marginLeft * 2;
+
+  const cleanText = md.replace(/[#*\[\]]/g, "").replace(/^- /gm, "• ");
+  const lines = doc.splitTextToSize(cleanText, usableWidth);
+
   doc.setFontSize(11);
-  doc.text(lines, 15, 15);
+
+  let y = marginTop;
+  const linesPerPage = Math.floor((pageHeight - marginTop - marginBottom) / lineHeight);
+  let lineCount = 0;
+
+  for (const line of lines) {
+    if (lineCount >= linesPerPage) {
+      doc.addPage();
+      y = marginTop;
+      lineCount = 0;
+    }
+    doc.text(line, marginLeft, y);
+    y += lineHeight;
+    lineCount++;
+  }
+
   doc.save(`${meeting.title.replace(/[^a-z0-9]/gi, "_")}.pdf`);
 }
 
