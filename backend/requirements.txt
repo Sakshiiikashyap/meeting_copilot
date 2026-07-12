@@ -13,3 +13,6 @@ openai
 slowapi
 pypdf
 python-docx
+pytest
+pytest-asyncio
+httpx
